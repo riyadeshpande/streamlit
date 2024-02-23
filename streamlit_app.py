@@ -35,50 +35,54 @@ def remcols(table,indices):
         table = table[table[idx] != "Not Recorded"]
     return table
 
-
-M03 = pd.read_excel("./dataset/M03.xlsx")
-M06 = pd.read_excel("./dataset/M06.xlsx")
-M09 = pd.read_excel("./dataset/M09.xlsx")
-M12 = pd.read_excel("./dataset/M12.xlsx")
-
-
-Env_Idx        = ["BehElim", "Confidence", "Concentration", "Responsiveness", "Initiative",
-                  "Excitability", "Hearing Sensitivity", "Body Sensitivity", "CR", "IP", "PP"]
-Test_Idx       = ["BehElim", "CR.1", "MP", "PP.1", "IP.1", "HG", "H1", "H2", "ACT"]
-Env_Idx1       = ["Confidence", "Concentration", "Responsiveness", "Initiative",
-                  "Excitability", "Hearing Sensitivity", "Body Sensitivity", "CR", "IP", "PP"]
-Test_Idx1      = ["CR.1", "MP", "PP.1", "IP.1", "HG", "H1", "H2", "ACT"]
+@st.cache_data
+def load_data():
+  M03 = pd.read_excel("./dataset/M03.xlsx")
+  M06 = pd.read_excel("./dataset/M06.xlsx")
+  M09 = pd.read_excel("./dataset/M09.xlsx")
+  M12 = pd.read_excel("./dataset/M12.xlsx")
 
 
-# Remove dogs from the tests if they contain missing information
-M03_Env       = remcols(M03[Env_Idx].dropna(), Env_Idx1)
-M03_Test      = remcols(M03[Test_Idx].dropna(), Test_Idx1)
-M06_Env       = remcols(M06[Env_Idx].dropna(), Env_Idx1)
-M06_Test      = remcols(M06[Test_Idx].dropna(), Test_Idx1)
-M09_Env       = remcols(M09[Env_Idx].dropna(), Env_Idx1)
-M09_Test      = remcols(M09[Test_Idx].dropna(), Test_Idx1)
-M12_Env       = remcols(M12[Env_Idx].dropna(), Env_Idx1)
-M12_Test      = remcols(M12[Test_Idx].dropna(), Test_Idx1)
+  Env_Idx        = ["BehElim", "Confidence", "Concentration", "Responsiveness", "Initiative",
+                    "Excitability", "Hearing Sensitivity", "Body Sensitivity", "CR", "IP", "PP"]
+  Test_Idx       = ["BehElim", "CR.1", "MP", "PP.1", "IP.1", "HG", "H1", "H2", "ACT"]
+  Env_Idx1       = ["Confidence", "Concentration", "Responsiveness", "Initiative",
+                    "Excitability", "Hearing Sensitivity", "Body Sensitivity", "CR", "IP", "PP"]
+  Test_Idx1      = ["CR.1", "MP", "PP.1", "IP.1", "HG", "H1", "H2", "ACT"]
 
 
-X = M12_Env
-y           = X["BehElim"]
-X           = X.drop("BehElim", axis = 1)
-beh_labels  = makelabels(list(y))
-
-X['Hearing Sensitivity'] = X['Hearing Sensitivity'].astype('float64')
-X['Body Sensitivity'] = X['Body Sensitivity'].astype('float64')
-X['CR'] = X['CR'].astype('float64')
-X['IP'] = X['IP'].astype('float64')
-X['PP'] = X['PP'].astype('float64')
-
-# Make Training/Testing (70/30%) Datasets for Single Tests
-X1_train, X1_test, y1_train, y1_test = train_test_split(X,
-                                                        y,
-                                                        test_size = 0.30,
-                                                        random_state = 101)
+  # Remove dogs from the tests if they contain missing information
+  M03_Env       = remcols(M03[Env_Idx].dropna(), Env_Idx1)
+  M03_Test      = remcols(M03[Test_Idx].dropna(), Test_Idx1)
+  M06_Env       = remcols(M06[Env_Idx].dropna(), Env_Idx1)
+  M06_Test      = remcols(M06[Test_Idx].dropna(), Test_Idx1)
+  M09_Env       = remcols(M09[Env_Idx].dropna(), Env_Idx1)
+  M09_Test      = remcols(M09[Test_Idx].dropna(), Test_Idx1)
+  M12_Env       = remcols(M12[Env_Idx].dropna(), Env_Idx1)
+  M12_Test      = remcols(M12[Test_Idx].dropna(), Test_Idx1)
 
 
+  X = M12_Env
+  y           = X["BehElim"]
+  X           = X.drop("BehElim", axis = 1)
+  beh_labels  = makelabels(list(y))
+
+  X['Hearing Sensitivity'] = X['Hearing Sensitivity'].astype('float64')
+  X['Body Sensitivity'] = X['Body Sensitivity'].astype('float64')
+  X['CR'] = X['CR'].astype('float64')
+  X['IP'] = X['IP'].astype('float64')
+  X['PP'] = X['PP'].astype('float64')
+
+  # Make Training/Testing (70/30%) Datasets for Single Tests
+  X1_train, X1_test, y1_train, y1_test = train_test_split(X,
+                                                          y,
+                                                          test_size = 0.30,
+                                                          random_state = 101)
+  return X, X1_train, X1_test, y1_train, y1_test
+
+X, X1_train, X1_test, y1_train, y1_test = load_data()
+
+@st.cache_resource
 #GRADIENT BOOSTING MACHINE
 def gradient_boosting_model(X_train, y_train, X_test, y_test):
     best = {'learning_rate': 0.13787546683029264,
@@ -99,7 +103,7 @@ def gradient_boosting_model(X_train, y_train, X_test, y_test):
 
 gb_model, a,b,c,d = gradient_boosting_model(X1_train, y1_train, X1_test, y1_test)
 
-
+@st.cache_resource
 #LOGISTIC REGRESSION
 def lr_model(X1_train, y1_train, X1_test, y1_test):
   log_model1  = LogisticRegression()
@@ -109,7 +113,7 @@ def lr_model(X1_train, y1_train, X1_test, y1_test):
 
 LogisticRegression_model, a,b,c,d = lr_model(X1_train, y1_train, X1_test, y1_test)
 
-
+@st.cache_resource
 #SUPPORT VECTOR MACHINE
 def svm_model(X1_train, y1_train, X1_test, y1_test):
   svc_model1  = SVC()
@@ -119,7 +123,7 @@ def svm_model(X1_train, y1_train, X1_test, y1_test):
 
 SupportVector_model, a,b,c,d = svm_model(X1_train, y1_train, X1_test, y1_test)
 
-
+@st.cache_resource
 #RANDOM FOREST
 def rf_model(X1_train, y1_train, X1_test, y1_test):
   rfc_model1  = RandomForestClassifier(n_estimators = 200, max_depth=20)
@@ -129,7 +133,7 @@ def rf_model(X1_train, y1_train, X1_test, y1_test):
 
 RandomForest_model, a,b,c,d = rf_model(X1_train, y1_train, X1_test, y1_test)
 
-
+@st.cache_resource
 #DECISION TREE
 def dtree_model(X1_train, y1_train, X1_test, y1_test):
   s = ['gini', 'entropy']
@@ -144,7 +148,7 @@ def dtree_model(X1_train, y1_train, X1_test, y1_test):
 
 DecisionTree_model, a,b,c,d = dtree_model(X1_train, y1_train, X1_test, y1_test)
 
-
+@st.cache_resource
 #EXTREME GRADIENT BOOSTING
 def xgboost_model(X_train, y_train, X_test, y_test):
     best = {'gamma': 0.4862373249390205,
@@ -200,7 +204,7 @@ def neural_network_model(X_train, y_train, X_test, y_test):
 
 #ANN_model, a,b,c,d = neural_network_model(X1_train, y1_train, X1_test, y1_test)
 
-
+@st.cache_resource
 def adaboost_model(X_train, y_train, X_test, y_test):
     best = {'learning_rate': 0.05085118741543816, 'n_estimators': 157.0}
     adaboost_model = AdaBoostClassifier(
@@ -213,7 +217,7 @@ def adaboost_model(X_train, y_train, X_test, y_test):
 
 Ada_model, a,b,c,d = adaboost_model(X1_train, y1_train, X1_test, y1_test)
 
-
+@st.cache_resource
 #K NEAREST NEIGHBOURS
 def knn_classifier_model(X_train, y_train, X_test, y_test):
     w = ['uniform', 'distance']
@@ -230,7 +234,7 @@ def knn_classifier_model(X_train, y_train, X_test, y_test):
 
 KNN_model, a,b,c,d = knn_classifier_model(X1_train, y1_train, X1_test, y1_test)
 
-
+@st.cache_resource
 #RIDGE CLASSIFIER
 def ridge_classifier_model(X_train, y_train, X_test, y_test):
     best = {'alpha': 0.07436964667090645, 'solver': 6}
@@ -245,7 +249,7 @@ def ridge_classifier_model(X_train, y_train, X_test, y_test):
 
 Ridge_model, a,b,c,d = ridge_classifier_model(X1_train, y1_train, X1_test, y1_test)
 
-
+@st.cache_resource
 #QUADRATIC DISCRIMINANT ANALYSIS
 def qda_classifier_model(X_train, y_train, X_test, y_test):
     best = {'reg_param': 0.25177877773076285}
@@ -258,7 +262,7 @@ def qda_classifier_model(X_train, y_train, X_test, y_test):
 
 QDA_model, a,b,c,d = qda_classifier_model(X1_train, y1_train, X1_test, y1_test)
 
-
+@st.cache_resource
 #LINEAR DISCRIMINANT ANALYSIS
 def lda_classifier_model(X_train, y_train, X_test, y_test):
     best = {'shrinkage': 0.5323495407563335, 'solver': 0}
@@ -407,23 +411,27 @@ st.subheader(f"Model : {selected_model}")
 st.write("Here's a demo for the selected ML model.")
 st.write("You may input trait values below to make predictions.")
 
-# User Input
-user_input = {}
-for feature in X.columns:
-    #user_input[feature] = st.slider(f"Enter {feature}:", min_value=X[feature].min().astype('float64'), max_value=X[feature].max().astype('float64'), value=X[feature].mean())
-    user_input[feature] = st.slider(f"Enter {feature}:", min_value=float(X[feature].min()), max_value=float(X[feature].max()), value=float(X[feature].mean()))
 # Make Prediction
 model_index = model_names.index(selected_model)
 selected_model_obj = models[model_index]
 
+# User Input
 label = ['Accepted', 'Eliminated']
-if st.button("Make Prediction"):
-    user_data = pd.DataFrame([user_input])
-    prediction = selected_model_obj.predict(user_data)
-    if prediction[0]==0:
-      st.success(f"The model predicts: {label[prediction[0]]}")
-    else:
-      st.error(f"The model predicts: {label[prediction[0]]}")
+user_input = {}
+with st.form("my_form"):
+  for feature in X.columns:
+    #user_input[feature] = st.slider(f"Enter {feature}:", min_value=X[feature].min().astype('float64'), max_value=X[feature].max().astype('float64'), value=X[feature].mean())
+    user_input[feature] = st.slider(f"Enter {feature}:", min_value=float(X[feature].min()), max_value=float(X[feature].max()), value=float(X[feature].mean()))
+
+  submitted = st.form_submit_button("Make Prediction")
+
+  if submitted:
+      user_data = pd.DataFrame([user_input])
+      prediction = selected_model_obj.predict(user_data)
+      if prediction[0]==0:
+        st.success(f"The model predicts: {label[prediction[0]]}")
+      else:
+        st.error(f"The model predicts: {label[prediction[0]]}")
 
 st.image("./images/model_comp_imbalance.png")
 st.caption("Comparison of accuracy and AUC of the ML models")
