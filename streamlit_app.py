@@ -1,4 +1,3 @@
-%%writefile app.py
 import pandas as pd
 import numpy as np
 import streamlit as st
@@ -14,7 +13,6 @@ from sklearn.metrics import classification_report,confusion_matrix, accuracy_sco
 from sklearn.metrics import roc_auc_score, roc_curve
 #from hyperopt import fmin, tpe, hp
 import xgboost as xgb
-from lightgbm import LGBMClassifier
 from sklearn.ensemble import AdaBoostClassifier
 from sklearn.neighbors import KNeighborsClassifier
 from sklearn.linear_model import RidgeClassifier
@@ -38,10 +36,10 @@ def remcols(table,indices):
     return table
 
 
-M03 = pd.read_excel("/content/drive/MyDrive/canine classification/M03.xlsx")
-M06 = pd.read_excel("/content/drive/MyDrive/canine classification/M06.xlsx")
-M09 = pd.read_excel("/content/drive/MyDrive/canine classification/M09.xlsx")
-M12 = pd.read_excel("/content/drive/MyDrive/canine classification/M12.xlsx")
+M03 = pd.read_excel("./dataset/M03.xlsx")
+M06 = pd.read_excel("./dataset/M06.xlsx")
+M09 = pd.read_excel("./dataset/M09.xlsx")
+M12 = pd.read_excel("./dataset/M12.xlsx")
 
 
 Env_Idx        = ["BehElim", "Confidence", "Concentration", "Responsiveness", "Initiative",
@@ -200,7 +198,7 @@ def neural_network_model(X_train, y_train, X_test, y_test):
   test_loss, test_accuracy = model.evaluate(X_test_tf, Y_test_tf)
   return model, round(test_accuracy, 2), round(roc_auc_score(Y_test_tf, nn_pred1), 3), round(f1_score(Y_test_tf, nn_pred1, average=None)[0], 2), round(f1_score(Y_test_tf, nn_pred1, average=None)[1], 2)
 
-ANN_model, a,b,c,d = neural_network_model(X1_train, y1_train, X1_test, y1_test)
+#ANN_model, a,b,c,d = neural_network_model(X1_train, y1_train, X1_test, y1_test)
 
 
 def adaboost_model(X_train, y_train, X_test, y_test):
@@ -286,7 +284,6 @@ models = [
     Pipeline([('model', RandomForest_model)]),
     Pipeline([('model', DecisionTree_model)]),
     Pipeline([('model', XGB_model)]),
-    Pipeline([('model', ANN_model)]),
     Pipeline([('model', Ada_model)]),
     Pipeline([('model', KNN_model)]),
     Pipeline([('model', Ridge_model)]),
@@ -303,8 +300,8 @@ col1, col2, col3 = st.columns([1,6,1])
 with col1:
   st.write("")
 with col2:
-  st.image("/content/drive/MyDrive/streamlit/airport_dog.png", width = 400)
-  st.image("/content/drive/MyDrive/streamlit/airport_doggo.png", width = 400)
+  st.image("./images/airport_dog.png", width = 400)
+  st.image("./images/airport_doggo.png", width = 400)
 with col3:
   st.write("")
 st.caption("Working dogs are trained to detect a wide variety of specific odors, such as explosives in crowded environments like concert halls or airports. Transportation Security Administration (TSA) trains around 400 canines every year to screen luggage at mass transits for narcotics, counterfeit money and even lithium batteries. Dogs are taught by their handlers to alert to the presence of these odors with a learned response such as sitting or lying quietly. Canine olfactory capabilities are more reliable than x-ray or trace machines in security.")
@@ -314,8 +311,8 @@ col1, col2, col3 = st.columns([1,6,1])
 with col1:
   st.write("")
 with col2:
-  st.image("/content/drive/MyDrive/streamlit/police_dog.jpg", width = 400)
-  st.image("/content/drive/MyDrive/streamlit/quake_dog.png", width = 400)
+  st.image("./images/police_dog.jpg", width = 400)
+  st.image("./images/quake_dog.png", width = 400)
 with col3:
   st.write("")
 st.caption("K-9 dogs (also known as polic dogs) assist law enforcement officers by locating missing persons, finding crime scene evidence and attacking suspects who flee from officers. Dogs can search through rubble after an earthquake, or cover miles of forest looking for a lost hiker and even locate the bodies of drowned victims in oceans.")
@@ -324,7 +321,7 @@ col1, col2, col3 = st.columns([1,6,1])
 with col1:
   st.write("")
 with col2:
-  st.image("/content/drive/MyDrive/streamlit/military_dogs.png", width = 400)
+  st.image("./images/military_dogs.png", width = 400)
 with col3:
   st.write("")
 st.caption("Many military working dogs (MWDs) are known to detect landmines in order to protect personnel from danger. Depending on their individual aptitudes, war dogs are trained to attack, hold down, and incapacitate the enemy. Top military breeds like German Shepherds or Belgian Malinois are particularly athletic and are selected by trainers for their aggressive natures.")
@@ -335,8 +332,8 @@ col1, col2, col3 = st.columns([1,6,1])
 with col1:
   st.write("")
 with col2:
-  st.image("/content/drive/MyDrive/streamlit/service_dog_in_training.jpg", width = 400)
-  st.image("/content/drive/MyDrive/streamlit/service_dog.jpg", width = 400)
+  st.image("./images/service_dog_in_training.jpg", width = 400)
+  st.image("./images/service_dog.jpg", width = 400)
 with col3:
   st.write("")
 st.caption("Dogs can give warning signs to patients about to have a migraine, detect the onset of a seizure as well as impending cardiac episodes. Dogs have also shown they can detect cancer by sniffing people's skin, bodily fluids, or breath. They also provide emotional support to individuals with depression by reminding their owner to take medication, and interrupting self-harming behaviors.")
@@ -346,8 +343,8 @@ col1, col2, col3 = st.columns([1,6,1])
 with col1:
   st.write("")
 with col2:
-  st.image("/content/drive/MyDrive/streamlit/covid_dog.png", width = 400)
-  st.image("/content/drive/MyDrive/streamlit/helsinki_airport_dog.png", width = 400)
+  st.image("./images/covid_dog.png", width = 400)
+  st.image("./images/helsinki_airport_dog.png", width = 400)
 with col3:
   st.write("")
 st.caption("Dubai Airport was the first to employ dogs to sniff out Covid-19 in traveler's sweat. Finland and Miami airports also employed sniffer dogs for the same thereafter. This process is not only cheap but also highly efficient in detecting the virus.")
@@ -357,7 +354,7 @@ col1, col2, col3 = st.columns([1,8,1])
 with col1:
   st.write("")
 with col2:
-  st.video("/content/drive/MyDrive/streamlit/medication.mp4")
+  st.video("./images/medication.mp4")
 with col3:
   st.write("")
 st.caption("They perform essential actions like guiding people with visual impairments in day to day activities such as recognising obstacles in their path and using public transport safely. For deaf people, guide dogs work to alert them to sounds of the doorbell, telephone alerts and even smoke alarms.")
@@ -366,24 +363,24 @@ col1, col2, col3 = st.columns([1,6,1])
 with col1:
   st.write("")
 with col2:
-  st.image("/content/drive/MyDrive/streamlit/service_dog_blind.jpg", width = 500)
+  st.image("./images/service_dog_blind.jpg", width = 500)
 with col3:
   st.write("")
 st.caption("They can give warning signs to patients about to have a migraine by various gestures and direct them to lie or sit down in order to prepare for the attack. Dogs have notified their owners suffering from diabetes when their blood sugar had dropped or spiked to a life threatening level.")
 st.caption("Therapists involve dogs to help children with learning disabilities to improve their memory and those with sensory processing challenges to work on their fine motor skills.")
 
 st.subheader("What is TSA?")
-st.image("/content/drive/MyDrive/streamlit/tsa_dog.jpg", width = 500)
+st.image("./images/tsa_dog.jpg", width = 500)
 st.caption("The Transportation Security Administration (TSA) is an agency of the United States Department of Homeland Security (DHS) that is in charge of the country's transportation networks and infrastructure.")
 st.caption("The TSA's primary mission is airport security and the prevention of aircraft hijacking. It is responsible for screening passengers and baggage at more than 450 U.S. airports, employing screening officers, explosives detection dog handlers, and bomb technicians in airports. The TSA has screening processes and regulations related to passengers and checked and carry-on luggage, including identification verification, pat-downs, full-body scanners, and explosives screening.")
-st.image("/content/drive/MyDrive/streamlit/tsa_airport_dog.jpeg", width = 500)
+st.image("./images/tsa_airport_dog.jpeg", width = 500)
 st.caption("The TSA National Explosives Detection Canine Program oversees the canine teams that do the job of protecting the transportation domain. They are trained on a variety of explosives and graduate the course after exhibiting proficiency in venues inclusive of all transportation environments including airport, terminal, freight, cargo, baggage, vehicle, bus, ferry and rail. There are 17 indoor venues on the premises that mimic a variety of transportation sites and modes. In relation to airports, this includes a cargo facility, an airport gate area, a checkpoint, a baggage claim area, the interior of an aircraft, an air cargo facility, two mock terminals, and open area searches venues for air scenting. Kennels can accommodate approximately 350 dogs.")
 st.caption("Once a team graduates from the training program, they return to their duty station to acclimate and familiarize the canine to their assigned operational environment. Each team is continually assessed to ensure the canines demonstrate operational proficiency in their environment including four key elements: the canine's ability to recognize explosives odors, the handler's ability to interpret the canine's change of behavior, the handler's ability to conduct logical and systematic searches, and the team's ability to locate the explosives odor source. Canine teams work at more than 100 of the nation's airports, mass-transit and maritime systems and are a highly mobile and efficient explosives detection tool. ")
 
 st.subheader("Dataset")
 st.caption("The Labrador and Golden Retriever are the preferred breeds for a guide dog throughout the world. They are highly trainable placid dogs that are responsive, quick to learn, sensitive, and possess temperaments required to thrive as service dogs.")
 st.caption("The dataset used in this study is taken from the cohort of Transportation Security Administration (TSA) canine breeding and training program where 628 Labrador Retrievers were evaluated based on a series of tests taken over a 12-month period. The dogs were assessed based on their performance in these tests related to olfaction detection traits, cooperation with handler and general activity. On basis of their scores by the end of this period, they were either successfully accepted or eliminated from the training program for working dogs.")
-st.image("/content/drive/MyDrive/streamlit/dataset_m12.png", width = 800)
+st.image("./images/dataset_m12.png", width = 800)
 st.caption("The dataset used in the present work is collected from dogs fostered in the period from 2002-2013. Beginning at the age of three months, they were evaluated at four time-points, with each evaluation taking place three months after the last. At each time-point, the dogs were made to go through two evaluation tests - Airport Terminal test and Environmental test. The former test was done in a mock airport terminal with controlled setting wherein the dogs had to hunt for a scented towel in vessels scattered throughout the terminal. This test was done to measure the ability to focus on an object even after being hidden, concentration, willingness and level of engagement with the handler. Whereas, the latter test was done in various locations at each time-point. These included a busy gift shop, a woodshop, a cargo area and airport passenger locations. This test was performed to capture the traits related to reactivity to noise stimulus, lack of distraction and enthusiasm.")
 st.caption("The dataset consists of four files namely M03, M06, M09 and M012 taken at the four time-points in the fostering period. Each file consists of the evaluation results from both the tests. There are total 33 columns which include the name, litter ID, test location, the different traits measured for behaviour pattern, comments from the handler and the final column gives the binary number indicating whether the dog is accepted further for pre-training or eliminated due to behavioural reasons.")
 
@@ -400,7 +397,7 @@ st.caption("In this present work, we have applied thirteen supervised machine le
 st.header("This webapp allows you to set custom values of features and assess canine suitability for olfactory detection training program.")
 st.markdown("Lets try it!")
 
-st.image("/content/drive/MyDrive/streamlit/group_of_dogs.jpg")
+st.image("./images/group_of_dogs.png")
 
 # Sidebar
 selected_model = st.sidebar.selectbox("Select a Model", model_names)
@@ -413,8 +410,8 @@ st.write("You may input trait values below to make predictions.")
 # User Input
 user_input = {}
 for feature in X.columns:
-    #user_input[feature] = st.number_input(f"Enter {feature}:", min_value=X[feature].min().astype('float64'), max_value=X[feature].max().astype('float64'), value=X[feature].mean())
-    user_input[feature] = st.slider(f"Enter {feature}:", min_value=X[feature].min().astype('float64'), max_value=X[feature].max().astype('float64'), value=X[feature].mean())
+    #user_input[feature] = st.slider(f"Enter {feature}:", min_value=X[feature].min().astype('float64'), max_value=X[feature].max().astype('float64'), value=X[feature].mean())
+    user_input[feature] = st.slider(f"Enter {feature}:", min_value=float(X[feature].min()), max_value=float(X[feature].max()), value=float(X[feature].mean()))
 # Make Prediction
 model_index = model_names.index(selected_model)
 selected_model_obj = models[model_index]
@@ -428,15 +425,15 @@ if st.button("Make Prediction"):
     else:
       st.error(f"The model predicts: {label[prediction[0]]}")
 
-st.image("/content/drive/MyDrive/streamlit/model_comp_imbalance.png")
+st.image("./images/model_comp_imbalance.png")
 st.caption("Comparison of accuracy and AUC of the ML models")
 
-st.image("/content/drive/MyDrive/streamlit/gbm_metrics.png")
+st.image("./images/gbm_metrics.png")
 st.caption("Performance metrics of GBM on the combined dataset")
 st.write("The best performance was obtained by GBM on M36912 combined dataset. We have achieved a remarkable accuracy of 96% along with AUC of 0.81 compared to Eyre's accuracy of 88% and AUC of 0.61.")
 
-st.image("/content/drive/MyDrive/streamlit/comparison.png")
+st.image("./images/comparison.png")
 st.caption("Best performing models on M03 AT test")
 
-st.image("/content/drive/MyDrive/streamlit/acceptance.png")
+st.image("./images/acceptance.png")
 st.subheader("Our abstract has been accepted in Biosangam 2024 International conference organised by the Department of Biotechnology at MNNIT Allahabad to be held from 23rd to 25th February 2024. This is the sixth edition of the conference and is mainly focused on Bio-Technological Intervention for Health, Agriculture and Circular Economy.")
